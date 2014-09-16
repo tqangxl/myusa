@@ -18,3 +18,7 @@ default[:myusa][:database][:password] = 'secret!'
 default[:mysql][:database][:root_password] = ''
 
 default[:myusa][:memcached][:host] = ''
+
+default[:newrelic][:nginx][:location] = '/opt/newrelic/nginx'
+default[:newrelic][:nginx][:repo] = 'https://github.com/crowdlab-uk/newrelic-nginx-agent.git'
+default[:newrelic][:nginx][:revision] = '2185743a3fd70ec85955198ab899a7d16720b9b3'

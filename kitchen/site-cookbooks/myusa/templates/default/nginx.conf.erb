@@ -27,6 +27,13 @@ server {
       proxy_pass http://app;
   }
 
+  # Used by New Relic nginx plugin
+  location = /nginx_stub_status {
+      stub_status on;
+      allow 127.0.0.1;
+      deny all;
+  }
+
   error_page 500 502 503 504 /500.html;
   client_max_body_size 4G;
   keepalive_timeout 10;

@@ -81,14 +81,6 @@ template "#{deploy_to_dir}/shared/config/memcached.yml" do
   )
 end
 
-# New Relic configuration
-template "#{deploy_to_dir}/shared/config/newrelic.yml" do
-  source 'newrelic.yml.erb'
-  variables(
-    newrelic_license_key: secrets['newrelic_license_key']
-  )
-end
-
 # set up the database
 include_recipe "mysql::client"
 
@@ -120,9 +112,47 @@ template "/etc/nginx/conf.d/#{app_id}.conf" do
     app_id: app_id
   )
 end
-#
-# nginx_conf_file "mywebsite.com" do
-#   socket "/var/www/myapp/shared/tmp/sockets/unicorn.socket"
-# end
 
-# notify nginx ...
+# New Relic configuration
+template "#{deploy_to_dir}/shared/config/newrelic.yml" do
+  source 'newrelic.yml.erb'
+  variables(
+    newrelic_license_key: secrets['newrelic_license_key']
+  )
+end
+
+# New Relic nginx agent
+directory node[:newrelic][:nginx][:location] do
+  recursive true
+end
+
+git node[:newrelic][:nginx][:location] do
+  repository node[:newrelic][:nginx][:repo]
+  revision node[:newrelic][:nginx][:revision]
+  action :export
+end
+
+rbenv_execute 'bundle_install' do
+  cwd node[:newrelic][:nginx][:location]
+  command 'bundle install'
+end
+
+template node[:newrelic][:nginx][:location] + '/config/newrelic_plugin.yml' do
+  source 'newrelic_nginx_plugin.yml.erb'
+  variables(
+    newrelic_license_key: secrets['newrelic_license_key']
+  )
+end
+
+link '/etc/init.d/newrelic_nginx' do
+  to node[:newrelic][:nginx][:location] + '/newrelic_nginx_agent.daemon'
+end
+
+rbenv_execute 'bundle_install' do
+  cwd node[:newrelic][:nginx][:location]
+  command './newrelic_nginx_agent.daemon start'
+end
+
+service 'newrelic_nginx' do
+  action [:enable]
+end
