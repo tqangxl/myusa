@@ -50,9 +50,9 @@
                                         <tr>
                                             <td valign="top" class="bodyContent" mc:edit="body_content">
                                                 <p>Hello there <%= @resource.email %> </p>
-                                                <p>Below is your requested <%= link_to 'access link', new_user_session_url(email: @resource.email, token: @token.raw).html_safe %> to connect to MyUSA.</p>
+                                                <p>Below is your requested <%= link_to 'access link', new_user_session_url(email: @resource.email, token: @token.raw).html_safe, protocol: 'https' %> to connect to MyUSA.</p>
                                                 <p>
-                                                <%= link_to 'Connect to MyUSA', new_user_session_url(email: @resource.email, token: @token.raw).html_safe, :class => 'btn-myusa'  %>
+                                                <%= link_to 'Connect to MyUSA', new_user_session_url(email: @resource.email, token: @token.raw).html_safe, :class => 'btn-myusa', protocol: 'https'  %>
                                                 </p>
                                                 <p>If you do not want to connect to MyUSA from this email account, just ignore this message.</p>
                                                 <p>Thanks!</p>
